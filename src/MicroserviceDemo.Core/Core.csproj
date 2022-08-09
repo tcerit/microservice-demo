@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>MicroserviceDemo.Core</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MediatR" Version="10.0.1" />
+        <PackageReference Include="Ardalis.GuardClauses" Version="4.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
+	      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.7">
+		      <PrivateAssets>all</PrivateAssets>
+		      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	      </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Events\" />
+      <None Remove="Ardalis.GuardClauses" />
+      <None Remove="Guards\" />
+      <None Remove="Data\" />
+      <None Remove="Data\Services\" />
+      <None Remove="Data\Outbox\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Events\" />
+      <Folder Include="Guards\" />
+      <Folder Include="Data\" />
+      <Folder Include="Data\Services\" />
+      <Folder Include="Data\Outbox\" />
+    </ItemGroup>
+</Project>

@@ -4,6 +4,8 @@
 */obj/
 */*/bin/
 */*/obj/
+**/obj
+**/bin
 */Properties/serviceDependencies.local.json
 */Properties/PublishProfiles/
 */*.xml

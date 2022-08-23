@@ -4,6 +4,7 @@ using Core.Events;
 using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
 using Core.Data.Outbox;
+using System.Threading;
 
 namespace Core.Data
 {
@@ -63,6 +64,7 @@ namespace Core.Data
                     await SaveEventToOutbox(dev);
                 }
             }
+            await base.SaveChangesAsync();
         }
 
         protected virtual async Task SaveEventToOutbox(IDomainEvent domainEvent)

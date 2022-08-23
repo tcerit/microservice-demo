@@ -23,6 +23,7 @@
       <None Remove="Data\" />
       <None Remove="Data\Services\" />
       <None Remove="Data\Outbox\" />
+      <None Remove="Settings\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Events\" />
@@ -30,5 +31,6 @@
       <Folder Include="Data\" />
       <Folder Include="Data\Services\" />
       <Folder Include="Data\Outbox\" />
+      <Folder Include="Settings\" />
     </ItemGroup>
 </Project>

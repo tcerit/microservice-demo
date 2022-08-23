@@ -10,6 +10,7 @@ namespace Core.Data.Outbox
         public DateTime DateOccured { get; private set; }
         public string Data { get; private set; }
         public string Type { get; private set; }
+        public int State { get; private set; }
 
         private OutboxItem() { }
 
@@ -18,11 +19,15 @@ namespace Core.Data.Outbox
             Type = type;
             Data = data;
             DateOccured = dateOccured;
+            State = 0;
         }
 
-        public static OutboxItem FromEvent(IDomainEvent domainEvent) => new(Guid.NewGuid(), domainEvent.GetType().Name, JsonSerializer.Serialize(domainEvent), domainEvent.DateOccured);
+        public static OutboxItem FromEvent(IDomainEvent domainEvent) => new(Guid.NewGuid(), domainEvent.GetType().Name, domainEvent.Serialize(), domainEvent.DateOccured);
 
-
+        public void Send()
+        {
+            State = 1;
+        }
     }
 }
 

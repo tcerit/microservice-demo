@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Customers.EventListener": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "MessageBroker:Username": "guest",
+        "MessageBroker:Password": "guest",
+        "MessageBroker:VirtualHost": "/",
+        "MessageBroker:HostName": "127.0.0.1",
+        "DatabaseSettings:ConnectionString": "Server=localhost;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
+      }
+    }
+  }
+}

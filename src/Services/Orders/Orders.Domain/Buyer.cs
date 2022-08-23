@@ -16,7 +16,7 @@ namespace Orders.Domain
         {
         }
 
-        public static Buyer Create(Guid id) => new(id);
+        public static Buyer FromCustomer(Guid customerId) => new(customerId);
 
         public Order StartOrdering()
         {

@@ -7,25 +7,17 @@ namespace Orders.Domain
 {
     public class OrderItem : ValueObject
     {
-        public Guid ProductId { get; private set; }
-        public string ProductName { get; private set; }
-        public double UnitPrice { get; private set; }
+        public OrderProduct Product { get; private set; }
         public int Quantity { get; private set; }
 
         private OrderItem()
         {
         }
 
-        internal OrderItem(Guid productId, string productName, double unitPrice, int quantity)
+        internal OrderItem(OrderProduct product, int quantity)
         {
-            Guard.Against.EmptyGuid(productId, nameof(productId));
-            Guard.Against.NullOrWhiteSpace(productName, nameof(productName));
-            Guard.Against.Negative(unitPrice, nameof(unitPrice));
             Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-
-            ProductId = productId;
-            ProductName = productName;
-            UnitPrice = unitPrice;
+            Product = product;
             Quantity = quantity;
         }
 

@@ -18,23 +18,26 @@ public class Order : Entity
     private readonly List<OrderItem> _items = new();
     public IReadOnlyCollection<OrderItem> Items => _items;
 
-
-    private Order() : base(Guid.NewGuid()) { }
+    private Order() { }
 
     private Order(Guid id, Buyer buyer) : base(id)
     {
-        Status = OrderStatus.DRAFT;
-        DateCreated = DateTime.Now;
+        Status = OrderStatus.UNSET;
         Buyer = buyer;
-        AddOrderStartedEvent();
     }
 
-    public static Order Start(Buyer buyer) => new(Guid.NewGuid(), buyer);
+    public static Order Start(Buyer buyer) {
+        Order order = new(Guid.NewGuid(), buyer);
+        order.Status = OrderStatus.DRAFT;
+        order.DateCreated = DateTime.Now;
+        order.AddOrderStartedEvent();
+        return order;
+    } 
 
 
-    public void AddItem(Guid productId, string prodcutName, double unitPrice, int quantity)
+    public void AddItem(OrderProduct product, int quantity)
     {
-        int index = _items.FindIndex(item => item.ProductId.Equals(productId));
+        int index = FindItemIndex(product);
         if (index!=-1)
         {
             _items[index].Add(quantity);
@@ -42,16 +45,16 @@ public class Order : Entity
         }
         else
         {
-            OrderItem orderItem = new(productId, prodcutName, unitPrice, quantity);
+            OrderItem orderItem = new(product, quantity);
             _items.Add(orderItem);
             AddOrderItemAddedEvent(orderItem);
         }
         
     }
 
-    public void RemoveItem(Guid productId)
+    public void RemoveItem(OrderProduct product)
     {
-        int index = _items.FindIndex(item => item.ProductId.Equals(productId));
+        int index = FindItemIndex(product);
         if (index != -1)
         {
             OrderItem temp = _items[index];
@@ -60,9 +63,9 @@ public class Order : Entity
         }
     }
 
-    public void SetQuantity(Guid productId, int quantity)
+    public void SetQuantity(OrderProduct product, int quantity)
     {
-        int index = _items.FindIndex(item => item.ProductId.Equals(productId));
+        int index = FindItemIndex(product);
         if (index!=-1)
         {
             _items[index].SetNewQuantity(quantity);
@@ -70,7 +73,12 @@ public class Order : Entity
         }
     }
 
-    
+    private int FindItemIndex(OrderProduct product)
+    {
+        return _items.FindIndex(item => item.Product.Equals(product));
+        
+    }
+
     public void Place()
     {
         Guard.Against.EmptyItemList(_items);
@@ -80,7 +88,7 @@ public class Order : Entity
         AddOrderPlacedEvent();
     }
 
-    public double CalculatedTotal { get => _items.Sum(item => item.UnitPrice * item.Quantity); }
+    public decimal OrderTotal { get => _items.Sum(item => item.Product.Price * item.Quantity); }
 
     private void AddOrderStartedEvent()
     {
@@ -89,25 +97,22 @@ public class Order : Entity
 
     private void AddOrderItemAddedEvent(OrderItem orderItem)
     {
-        AddDomainEvent(new OrderItemAddedEvent(Id, orderItem.ProductId, orderItem.ProductName, orderItem.UnitPrice, orderItem.Quantity));
+        AddDomainEvent(new OrderItemAddedEvent(Id, orderItem.Product.Id, orderItem.Product.Name, orderItem.Product.Price, orderItem.Quantity));
     }
 
     private void AddOrderItemRemovedEvent(OrderItem orderItem)
     {
-        AddDomainEvent(new OrderItemRemovedEvent(Id, orderItem.ProductId));
+        AddDomainEvent(new OrderItemRemovedEvent(Id, orderItem.Product.Id));
     }
 
     private void AddOrderItemChangedEvent(OrderItem orderItem)
     {
-        AddDomainEvent(new OrderItemChangedEvent(Id, orderItem.ProductId, orderItem.Quantity));
+        AddDomainEvent(new OrderItemChangedEvent(Id, orderItem.Product.Id, orderItem.Quantity));
     }
 
     private void AddOrderPlacedEvent()
     {
-        AddDomainEvent(new OrderPlacedEvent(Id, Buyer.Id, CalculatedTotal));
+        AddDomainEvent(new OrderPlacedEvent(Id, Buyer.Id, OrderTotal));
     }
-
-
-
 }
 

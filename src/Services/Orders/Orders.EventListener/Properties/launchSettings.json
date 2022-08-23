@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Orders.EventListener": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5000/",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "MessageBroker:Username": "guest",
+        "MessageBroker:Password": "guest",
+        "MessageBroker:VirtualHost": "/",
+        "MessageBroker:HostName": "127.0.0.1",
+        "DatabaseSettings:ConnectionString": "Server=localhost;Port=5432;Database=MSDOrdersDB;User Id=postgres;Password=123"
+      }
+    }
+  }
+}

@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <None Remove="Commands\" />
+    <None Remove="Repositories\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orders.Data\Orders.Data.csproj" />

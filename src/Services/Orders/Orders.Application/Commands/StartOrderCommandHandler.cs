@@ -5,15 +5,16 @@ using Orders.Domain;
 using MediatR;
 using Core.Data;
 using Ardalis.GuardClauses;
+using Orders.Application.Repositories;
 
 namespace Orders.Application.Commands
 {
     public class StartOrderCommandHandler : IRequestHandler<StartOrderCommand, Guid>
     {
-        private readonly IRepository<Order> _repository;
+        private readonly IOrderRepository _repository;
         private readonly IRepository<Buyer> _buyerRepository;
 
-        public StartOrderCommandHandler(IRepository<Order> repository, IRepository<Buyer> buyerRepository)
+        public StartOrderCommandHandler(IOrderRepository repository, IRepository<Buyer> buyerRepository)
         {
             _repository = repository;
             _buyerRepository = buyerRepository;
@@ -22,15 +23,14 @@ namespace Orders.Application.Commands
 
         public async Task<Guid> Handle(StartOrderCommand cmd, CancellationToken cancellationToken)
         {
-            Buyer buyer = await _buyerRepository.GetByIdAsync(cmd.CustomerId);
-
+            Buyer? buyer = await _buyerRepository.GetByIdAsync(cmd.CustomerId);
             Guard.Against.Null(buyer, nameof(Buyer), "Buyer not found");
 
             Order order = buyer.StartOrdering();
 
             await _repository.AddAsync(order);
-            return buyer.Id;
 
+            return buyer.Id;
         }
     }
 

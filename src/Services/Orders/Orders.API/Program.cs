@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Orders.Application;
+using Orders.Application.Repositories;
 using Orders.Data;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

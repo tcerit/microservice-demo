@@ -18,6 +18,8 @@ public class Order : Entity
     private readonly List<OrderItem> _items = new();
     public IReadOnlyCollection<OrderItem> Items => _items;
 
+    public decimal OrderTotal { get => _items.Sum(item => item.Product.Price * item.Quantity); }
+
     private Order() { }
 
     private Order(Guid id, Buyer buyer) : base(id)
@@ -88,7 +90,6 @@ public class Order : Entity
         AddOrderPlacedEvent();
     }
 
-    public decimal OrderTotal { get => _items.Sum(item => item.Product.Price * item.Quantity); }
 
     private void AddOrderStartedEvent()
     {

@@ -2,6 +2,7 @@
 using Ardalis.GuardClauses;
 using Core.Data;
 using MediatR;
+using Orders.Application.Repositories;
 using Orders.Domain;
 
 namespace Orders.Application.Commands
@@ -21,11 +22,8 @@ namespace Orders.Application.Commands
         public async Task<Unit> Handle(PlaceOrderCommand cmd, CancellationToken cancellationToken)
         {
             Buyer? buyer = await _buyerRepository.GetByIdAsync(cmd.CustomerId);
-
             Guard.Against.Null(buyer, nameof(Buyer), "Buyer not found");
-
             Order? order = await _orderRepository.GetOrder(cmd.OrderId);
-
             Guard.Against.Null(order, nameof(Buyer), "Order not found");
 
             order.Place();

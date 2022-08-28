@@ -39,7 +39,7 @@ public class Customer : Entity
 
     private void AddUserCreatedEvent()
     {
-        AddDomainEvent(new CustomerCreatedEvent(Id));
+        AddDomainEvent(new CustomerCreatedEvent(Id, $"{Name} {LastName}"));
     }
 
     private void AddLoyaltyPointsEarnedEvent(decimal earnedPoints)

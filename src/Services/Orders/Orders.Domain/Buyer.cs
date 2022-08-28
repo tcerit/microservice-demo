@@ -5,6 +5,7 @@ namespace Orders.Domain
 {
     public class Buyer : Entity
     {
+        public string FullName { get; private set; }
         private readonly List<Order> _orders = new();
         public IReadOnlyCollection<Order> Orders => _orders;
 
@@ -12,11 +13,12 @@ namespace Orders.Domain
         {
         }
 
-        private Buyer(Guid id) : base(id)
+        private Buyer(Guid id, string fullName) : base(id)
         {
+            FullName = fullName;
         }
 
-        public static Buyer FromCustomer(Guid customerId) => new(customerId);
+        public static Buyer FromCustomer(Guid customerId, string fullName) => new(customerId, fullName);
 
         public Order StartOrdering()
         {

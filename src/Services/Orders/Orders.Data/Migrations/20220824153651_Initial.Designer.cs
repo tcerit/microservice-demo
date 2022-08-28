@@ -12,7 +12,7 @@ using Orders.Data;
 namespace Orders.Data.Migrations
 {
     [DbContext(typeof(OrdersDataContext))]
-    [Migration("20220823192035_Initial")]
+    [Migration("20220824153651_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,10 @@ namespace Orders.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

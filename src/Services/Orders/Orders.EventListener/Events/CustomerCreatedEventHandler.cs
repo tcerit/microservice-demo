@@ -19,7 +19,7 @@ namespace Orders.EventListener.Events
         {
             CustomerCreatedEvent eventData = notification.DomainEvent;
 
-            await _repository.AddAsync(Buyer.FromCustomer(eventData.CustomerId));
+            await _repository.AddAsync(Buyer.FromCustomer(eventData.CustomerId, eventData.FullName));
         }
     }
 }

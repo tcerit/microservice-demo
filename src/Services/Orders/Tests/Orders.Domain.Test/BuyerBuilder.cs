@@ -12,7 +12,7 @@ namespace Orders.Domain.Test
 
 		public Buyer BuildDefault()
 		{
-			_buyer = Buyer.FromCustomer(Guid.NewGuid());
+			_buyer = Buyer.FromCustomer(Guid.NewGuid(), "Buyer I");
 			return _buyer;
         }
 	}

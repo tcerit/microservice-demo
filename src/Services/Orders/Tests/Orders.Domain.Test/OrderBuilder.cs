@@ -16,7 +16,7 @@ namespace Orders.Domain.Test
 
         public Order BuildWithOrderStart()
         {
-            Buyer buyer = Buyer.FromCustomer(Guid.NewGuid());
+            Buyer buyer = Buyer.FromCustomer(Guid.NewGuid(), "Buyer I");
             _order = Order.Start(buyer);
             return _order;
         }

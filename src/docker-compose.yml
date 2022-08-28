@@ -52,8 +52,8 @@ services:
     image: dpage/pgadmin4  
     container_name: pgadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
-      - PGADMIN_DEFAULT_PASSWORD=admin1234
+      - PGADMIN_DEFAULT_EMAIL=tunccerit@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=123
     restart: always
     ports:
         - "5050:80"
@@ -61,13 +61,16 @@ services:
       - pgadmin_data:/root/.pgadmin
 
   customers.api:
+    image: ${DOCKER_REGISTRY-}customersapi
+    build:
+      context: .
+      dockerfile: Services/Customers/Customers.API/Dockerfile
     container_name: customers.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-      - "ElasticConfiguration:Uri=http://elasticsearch:9200"
+      - "DatabaseSettings:Server=localhost;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
     depends_on:
-      - catalogdb
+      - customersdb
     ports:
       - "8000:80"
 

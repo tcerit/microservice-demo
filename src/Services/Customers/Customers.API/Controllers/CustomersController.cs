@@ -1,4 +1,6 @@
 using Customers.Application.Commands;
+using Customers.Application.Models;
+using Customers.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +27,21 @@ public class CustomersController : ControllerBase
             return Ok(registeredCustomerId);
         }
         catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
+    [HttpGet]
+    public async Task<ActionResult<List<CustomerDto>>> Get([FromQuery] ListCustomersQuery request)
+    {
+        try
+        {
+            List<CustomerDto> result = await _mediator.Send(new ListCustomersQuery());
+            return Ok(result);
+        }
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }

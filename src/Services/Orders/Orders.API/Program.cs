@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Orders.Application;
 using Orders.Application.Repositories;
+using Orders.Application.Services;
 using Orders.Data;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -24,7 +25,7 @@ builder.Services.AddDbContext<OrdersDataContext>(options => {
 builder.Services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<OrdersDataContext>());
 builder.Services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
 builder.Services.AddTransient(typeof(IOrderRepository), typeof(OrderRepository));
-
+builder.Services.AddAutoMapper(typeof(OrdersMapper));
 builder.Services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
 builder.Services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());

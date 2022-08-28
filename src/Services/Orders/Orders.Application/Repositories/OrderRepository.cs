@@ -20,6 +20,13 @@ namespace Orders.Application.Repositories
         {
             return FindById(id).Include(p => p.Buyer).SingleOrDefaultAsync();
         }
+
+        public Task<List<Order>> PlacedOrdersWithItems(DateTime startTime, DateTime endTime)
+        {
+            return Find(p => p.Status.Equals(OrderStatus.PLACED) && p.DatePlaced >= startTime && p.DatePlaced <= endTime)
+                .Include(p => p.Buyer)
+                .ToListAsync();
+        }
     }
 }
 

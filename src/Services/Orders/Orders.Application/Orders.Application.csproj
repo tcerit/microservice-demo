@@ -9,13 +9,23 @@
   <ItemGroup>
     <None Remove="Commands\" />
     <None Remove="Repositories\" />
+    <None Remove="AutoMapper" />
+    <None Remove="Queries\" />
+    <None Remove="Services\" />
+    <None Remove="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
     <Folder Include="Repositories\" />
+    <Folder Include="Queries\" />
+    <Folder Include="Services\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orders.Data\Orders.Data.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
   </ItemGroup>
 </Project>

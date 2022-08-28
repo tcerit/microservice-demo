@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Orders.Application.Commands;
+using Orders.Application.Models;
+using Orders.Application.Queries;
 
 namespace Orders.API.Controllers;
 
@@ -35,7 +37,7 @@ public class OrdersController : ControllerBase
         
     }
 
-    [HttpPost("{id}/Add")]
+    [HttpPost("{id}/Items")]
     public async Task<ActionResult> Add([FromRoute] Guid id, [FromBody] AddOrderItemRequest request)
     {
         try
@@ -50,6 +52,56 @@ public class OrdersController : ControllerBase
             return BadRequest(e.Message);
         }
 
+    }
+
+    [HttpPost("{id}/Items/{productId}")]
+    public async Task<ActionResult> Remove([FromRoute] Guid id, [FromRoute] Guid productId)
+    {
+        try
+        {
+            await _mediator.Send(new RemoveOrderItemCommand(id, productId));
+
+            return Ok();
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+
+    }
+
+    [HttpPost("{id}/Items/{productId}/SetQuantity")]
+    public async Task<ActionResult> SetQuantity([FromRoute] Guid id, [FromRoute] Guid productId, [FromBody] int quantity)
+    {
+        try
+        {
+            await _mediator.Send(new EditQuantityCommand(id, productId, quantity));
+
+            return Ok();
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<OrderDto>>> PlacedOrders([FromQuery] ListPlacedOrdersRequest request)
+    {
+        try
+        {
+            List<OrderDto> orders = await _mediator.Send(new ListPlacedOrdersQuery(request.DateStart, request.DateEnd));
+
+            return Ok(orders);
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
 

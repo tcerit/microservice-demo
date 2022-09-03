@@ -16,7 +16,7 @@ namespace Core.Events
             });
         }
 
-        public static T? Deserialize<T>(string json)
+        public static T? Deserialize<T>(string json) where T : IDomainEvent
         {
             return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
             {

@@ -33,17 +33,19 @@ public class Program
         builder.Services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
         builder.Services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
         builder.Services.AddAutoMapper(typeof(CustomersMapper));
-        //builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
         builder.Services.AddMediatR(typeof(RegisterCustomerCommand).Assembly);
 
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+        using (IServiceScope scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        {
+            scope.ServiceProvider.GetService<CustomersDataContext>()?.Database.Migrate();
+        }
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

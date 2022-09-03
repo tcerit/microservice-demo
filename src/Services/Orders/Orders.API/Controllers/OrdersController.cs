@@ -21,11 +21,11 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("Start")]
-    public async Task<ActionResult> Start([FromBody] Guid customerId)
+    public async Task<ActionResult> Start([FromBody] OrderStartRequest request)
     {
         try
         {
-            Guid id = await _mediator.Send(new StartOrderCommand(customerId));
+            Guid id = await _mediator.Send(new StartOrderCommand(request.CustomerId));
 
             return Ok(id);
 

@@ -38,9 +38,12 @@ builder.Services.AddSwaggerGen();
 
 
 
-
-
 var app = builder.Build();
+
+using (IServiceScope scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    scope.ServiceProvider.GetService<OrdersDataContext>()?.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

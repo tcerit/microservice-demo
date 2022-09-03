@@ -11,11 +11,12 @@ COPY ["Services/Customers/Customers.Domain/Customers.Domain.csproj", "Services/C
 COPY ["MicroserviceDemo.Core/Core.csproj", "MicroserviceDemo.Core/"]
 RUN dotnet restore "Services/Customers/Customers.API/Customers.API.csproj"
 COPY . .
+
 WORKDIR "/src/Services/Customers/Customers.API"
 RUN dotnet build "Customers.API.csproj" -c Release -o /app/build
-
 FROM build AS publish
 RUN dotnet publish "Customers.API.csproj" -c Release -o /app/publish
+
 
 FROM base AS final
 WORKDIR /app

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   customersdb:
@@ -7,73 +7,241 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=MSCustomersDB
+      - POSTGRES_DB=MSDCustomersDB
+      - PGDATA=/var/lib/postgresql/data/orders/
     restart: always
     ports:
-        - "5432:5432"
+        - "5433:5432"
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-      
+      - customers_data:/var/lib/postgresql/data/customers/
+
   ordersdb:
     image: postgres
     container_name: ordersdb
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=MSOrdersDB
+      - POSTGRES_DB=MSDOrdersDB
+      - PGDATA=/var/lib/postgresql/data/orders/
     restart: always
     ports:
-        - "5432:5432"
+        - "5434:5432"
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-
+      - orders_data:/var/lib/postgresql/data/orders/
+  
   productsdb:
     image: postgres
     container_name: productsdb
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=MSProductsDB
+      - POSTGRES_DB=MSDProductsDB
+      - PGDATA=/var/lib/postgresql/data/products/
     restart: always
     ports:
-        - "5432:5432"
+        - "5435:5432"
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - products_data:/var/lib/postgresql/data/product/
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
+    image: rabbitmq:3-management
     restart: always
+    container_name: rabbitmq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 15s
+      retries: 3
     ports:
-        - "5672:5672"
-        - "15672:15672"
+        - "5673:5672"
+        - "15673:15672"
 
   pgadmin:
     image: dpage/pgadmin4  
     container_name: pgadmin
+    depends_on:
+      - customersdb
     environment:
-      - PGADMIN_DEFAULT_EMAIL=tunccerit@gmail.com
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=123
     restart: always
     ports:
-        - "5050:80"
+        - "5051:80"
+    logging:
+      driver: none
     volumes:
       - pgadmin_data:/root/.pgadmin
 
   customers.api:
     image: ${DOCKER_REGISTRY-}customersapi
+    container_name: customers.api
     build:
       context: .
       dockerfile: Services/Customers/Customers.API/Dockerfile
-    container_name: customers.api
+    restart: always
+    depends_on:
+        - customersdb
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:Server=localhost;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
-    depends_on:
-      - customersdb
+      - "DatabaseSettings:ConnectionString=Server=customersdb;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
+    command: ["./wait-for-it.sh", "customersdb:5432 rabbitmq:5672", "--", "dotnet", "Customers.API.dll"]
     ports:
       - "8000:80"
+  
+  customers.messages:
+      image: ${DOCKER_REGISTRY-}customersmessages
+      build:
+        context: .
+        dockerfile: Services/Customers/Customers.MessageRelay/Dockerfile
+      restart: always
+      container_name: customers.messages
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "DatabaseSettings:ConnectionString=Server=customersdb;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
+        - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+      command: ["./wait-for-it.sh", "customersdb:5432 rabbitmq:5672", "--", "dotnet", "Customers.MessageRelay.dll"]
+      depends_on:
+        - customersdb
+        - rabbitmq
+      ports:
+        - "8001:80"
 
+  customers.listener:
+    image: ${DOCKER_REGISTRY-}customerslistener
+    build:
+      context: .
+      dockerfile: Services/Customers/Customers.EventListener/Dockerfile
+    container_name: customers.listener
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=customersdb;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
+      - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+    restart: always
+    depends_on:
+      - customersdb
+      - rabbitmq
+    command: ["./wait-for-it.sh", "customersdb:5432 rabbitmq:5672", "--", "dotnet", "Customers.MessageRelay.dll"]
+    ports:
+      - "8002:80"
+
+  #ORDERS
+  orders.api:
+    image: ${DOCKER_REGISTRY-}ordersapi
+    build:
+      context: .
+      dockerfile: Services/Orders/Orders.API/Dockerfile
+    container_name: orders.api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=ordersdb;Port=5432;Database=MSDOrdersDB;User Id=postgres;Password=123"
+    command: ["./wait-for-it.sh", "ordersdb:5432", "--", "dotnet", "Orders.API.dll"]
+    depends_on:
+      ordersdb:
+        condition: service_healthy
+    ports:
+      - "8010:80"
+
+  orders.messages:
+      image: ${DOCKER_REGISTRY-}ordersmessages
+      build:
+        context: .
+        dockerfile: Services/Orders/Orders.MessageRelay/Dockerfile
+      container_name: orders.messages
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "DatabaseSettings:ConnectionString=Server=ordersdb;Port=5432;Database=MSDOrdersDB;User Id=postgres;Password=123"
+        - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+      command: ["./wait-for-it.sh", "ordersdb:5432 rabbitmq:5672", "--", "dotnet", "Orders.MessageRelay.dll"]
+      restart: always
+      depends_on:
+        ordersdb:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+      ports:
+        - "8011:80"
+
+  orders.listener:
+    image: ${DOCKER_REGISTRY-}orderslistener
+    build:
+      context: .
+      dockerfile: Services/Orders/Orders.EventListener/Dockerfile
+    container_name: orders.listener
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=ordersdb;Port=5432;Database=MSDOrdersDB;User Id=postgres;Password=123"
+      - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+    command: ["./wait-for-it.sh", "ordersdb:5432 rabbitmq:5672", "--", "dotnet", "Orders.EventListener.dll"]
+    restart: always
+    depends_on:
+      ordersdb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8012:80"
+  
+
+  # # PRODUCTS
+  products.api:
+    image: ${DOCKER_REGISTRY-}productsapi
+    build:
+      context: .
+      dockerfile: Services/Products/Products.API/Dockerfile
+    container_name: products.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=productsdb;Port=5432;Database=MSDProductsDB;User Id=postgres;Password=123"
+    depends_on:
+      - productsdb
+    ports:
+      - "8020:80"
+    restart: always
+    command: ["./wait-for-it.sh", "productsdb:5432 rabbitmq:5672", "--", "dotnet", "Products.API.dll"]
+
+
+  products.messages:
+      image: ${DOCKER_REGISTRY-}productsmessages
+      build:
+        context: .
+        dockerfile: Services/Products/Products.MessageRelay/Dockerfile
+      container_name: products.messages
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "DatabaseSettings:ConnectionString=Server=productsdb;Port=5432;Database=MSDProductsDB;User Id=postgres;Password=123"
+        - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+      depends_on:
+        - productsdb
+        - rabbitmq
+      ports:
+        - "8021:80"
+      restart: always
+      command: ["./wait-for-it.sh", "productsdb:5432 rabbitmq:5672", "--", "dotnet", "Products.MessageRelay.dll"]
+
+      
 volumes:
-  postgres_data:
+  customers_data:
+  orders_data:
   pgadmin_data:
+  products_data:
+

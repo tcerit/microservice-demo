@@ -14,12 +14,11 @@ AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables();
+        var builder = new ConfigurationBuilder().AddEnvironmentVariables();
         var configuration = builder.Build();
         var dbSettings = configuration.GetSection("DatabaseSettings");
         services.AddDbContext<CustomersDataContext>(options => {
-            options.EnableSensitiveDataLogging()
-                .UseNpgsql(dbSettings.GetValue<string>("ConnectionString"));
+            options.UseNpgsql(dbSettings.GetValue<string>("ConnectionString"));
         }, ServiceLifetime.Singleton);
         services.AddSingleton<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<CustomersDataContext>());
         services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));

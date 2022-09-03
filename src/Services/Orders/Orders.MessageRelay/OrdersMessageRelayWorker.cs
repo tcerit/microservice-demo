@@ -14,13 +14,13 @@ public class OrdersMessageRelayWorker : BackgroundService
 {
     private readonly ILogger<OrdersMessageRelayWorker> _logger;
     private readonly IDomainEventDispatcher _dispatcher;
-    private readonly MessageBrokerSettings _messageBrokerSettings;
+    private readonly MessageBrokerSettings _messageBroker;
     private readonly IRepository<OutboxItem> _repository;
     private IConnection _connection;
     private IModel _channel;
-    private string _exchangeName;
     private Dictionary<ulong, OutboxItem> unqueuedItems = new();
     private List<OutboxItem> _changeList = new();
+    private readonly string _exchangeName;
 
     public OrdersMessageRelayWorker(
         ILogger<OrdersMessageRelayWorker> logger,
@@ -28,24 +28,17 @@ public class OrdersMessageRelayWorker : BackgroundService
         IRepository<OutboxItem> repository)
     {
         _logger = logger;
-        _messageBrokerSettings = messageBrokerOptions.Value;
+        _repository = repository;
+        _messageBroker = messageBrokerOptions.Value;
         _exchangeName = "OrderEvents";
         InitRabbitMQ();
-        _repository = repository;
     }
 
     private void InitRabbitMQ()
     {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.UserName = _messageBrokerSettings.Username;
-        factory.Password = _messageBrokerSettings.Password;
-        factory.VirtualHost = _messageBrokerSettings.VirtualHost;
-        factory.HostName = _messageBrokerSettings.HostName;
-
-        // create connection  
+        factory.Uri = new Uri(_messageBroker.Uri);
         _connection = factory.CreateConnection();
-
-        // create channel  
         _channel = _connection.CreateModel();
 
         _channel.ExchangeDeclare(_exchangeName, ExchangeType.Direct);
@@ -66,7 +59,6 @@ public class OrdersMessageRelayWorker : BackgroundService
             unsentOutboxList.ForEach(outboxItem =>
             {
                 var body = Encoding.UTF8.GetBytes(outboxItem.Data);
-                // unqueuedItems.Add(channel.NextPublishSeqNo, outboxItem);
                 _channel.BasicPublish(exchange: _exchangeName,
                                      routingKey: outboxItem.Type,
                                      basicProperties: messageProperties,
@@ -78,7 +70,7 @@ public class OrdersMessageRelayWorker : BackgroundService
 
 
 
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(5000, stoppingToken);
             await _repository.UpdateRangeAsync(_changeList);
             _changeList.Clear();
         }

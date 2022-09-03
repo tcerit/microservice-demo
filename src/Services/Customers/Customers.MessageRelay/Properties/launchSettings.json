@@ -6,10 +6,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
         "DatabaseSettings:ConnectionString": "Server=localhost;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123",
-        "MessageBroker:Username": "guest",
-        "MessageBroker:Password": "guest",
-        "MessageBroker:VirtualHost": "/",
-        "MessageBroker:HostName": "127.0.0.1"
+        "MessageBroker:Uri": "amqp://guest:guest@127.0.0.1:5672"
       }
     }
   }

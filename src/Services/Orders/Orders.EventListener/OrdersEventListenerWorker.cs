@@ -15,15 +15,17 @@ public class OrdersEventListenerWorker : BackgroundService
 {
     private readonly ILogger<OrdersEventListenerWorker> _logger;
     private readonly IDomainEventDispatcher _dispatcher;
-    private readonly MessageBrokerSettings _messageBrokerSettings;
+    private readonly MessageBrokerSettings _messageBroker;
     private IConnection _connection;
     private IModel _channel;
     private List<string> _queueNames = new List<string>();
+    private const string CUSTOMER_EVENTS = "CustomerEvents";
+    private const string PRODUCT_EVENTS = "ProductEvents";
 
     public OrdersEventListenerWorker(ILogger<OrdersEventListenerWorker> logger, IOptions<MessageBrokerSettings> messageBrokerOptions, IDomainEventDispatcher dispatcher)
     {
         _logger = logger;
-        _messageBrokerSettings = messageBrokerOptions.Value;
+        _messageBroker = messageBrokerOptions.Value;
         _dispatcher = dispatcher;
         InitRabbitMQ();
     }
@@ -31,19 +33,12 @@ public class OrdersEventListenerWorker : BackgroundService
     private void InitRabbitMQ()
     {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.UserName = _messageBrokerSettings.Username;
-        factory.Password = _messageBrokerSettings.Password;
-        factory.VirtualHost = _messageBrokerSettings.VirtualHost;
-        factory.HostName = _messageBrokerSettings.HostName;
-
-        // create connection  
+        factory.Uri = new Uri(_messageBroker.Uri);
         _connection = factory.CreateConnection();
-
-        // create channel  
         _channel = _connection.CreateModel();
 
-        Subscribe("CustomerEvents", new string[] { nameof(CustomerCreatedEvent) });
-        Subscribe("ProductEvents", new string[] {
+        Subscribe(CUSTOMER_EVENTS, new string[] { nameof(CustomerCreatedEvent) });
+        Subscribe(PRODUCT_EVENTS, new string[] {
             nameof(ProductCreatedEvent),
             nameof(ProductListedEvent),
             nameof(ProductDelistedEvent)
@@ -53,8 +48,7 @@ public class OrdersEventListenerWorker : BackgroundService
     private void Subscribe(string exchangeName, string[] routingKeys)
     {
         _channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
-
-        var queueName = _channel.QueueDeclare().QueueName;
+        string queueName = _channel.QueueDeclare().QueueName;
 
         for (int i = 0; i<routingKeys.Length; i++)
         {

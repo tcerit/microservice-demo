@@ -13,34 +13,29 @@ public class CustomerEventListenerWorker : BackgroundService
 {
     private readonly ILogger<CustomerEventListenerWorker> _logger;
     private readonly IDomainEventDispatcher _dispatcher;
-    private readonly MessageBrokerSettings _messageBrokerSettings;
+    private readonly MessageBrokerSettings _messageBroker;
     private IConnection _connection;
     private IModel _channel;
     private string _queueName;
+    private const string ORDER_EVENTS = "OrderEvents";
 
     public CustomerEventListenerWorker(ILogger<CustomerEventListenerWorker> logger, IOptions<MessageBrokerSettings> messageBrokerOptions, IDomainEventDispatcher dispatcher)
     {
         _logger = logger;
-        _messageBrokerSettings = messageBrokerOptions.Value;
+        _messageBroker = messageBrokerOptions.Value;
         _dispatcher = dispatcher;
         InitRabbitMQ();
     }
 
     private void InitRabbitMQ()
     {
+        Console.WriteLine(_messageBroker.Uri);
         ConnectionFactory factory = new ConnectionFactory();
-        factory.UserName = _messageBrokerSettings.Username;
-        factory.Password = _messageBrokerSettings.Password;
-        factory.VirtualHost = _messageBrokerSettings.VirtualHost;
-        factory.HostName = _messageBrokerSettings.HostName;
-
-        // create connection  
-        _connection = factory.CreateConnection();
-
-        // create channel  
+        factory.Uri = new Uri(_messageBroker.Uri);
+        _connection = factory.CreateConnection(); 
         _channel = _connection.CreateModel();
 
-        Subscribe("OrderEvents", new string[] { nameof(OrderPlacedEvent) });
+        Subscribe(ORDER_EVENTS, new string[] { nameof(OrderPlacedEvent) });
 
     }
 

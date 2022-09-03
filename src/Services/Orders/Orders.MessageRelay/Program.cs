@@ -30,6 +30,13 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         services.AddHostedService<OrdersMessageRelayWorker>();
     })
+    .ConfigureLogging((context, logging) => {
+        var env = context.HostingEnvironment;
+        var config = context.Configuration.GetSection("Logging");
+        logging.AddConfiguration(config);
+        logging.AddConsole();
+        logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+    })
     .Build();
 
 await host.RunAsync();

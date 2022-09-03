@@ -18,9 +18,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         var configuration = builder.Build();
         var dbSettings = configuration.GetSection("DatabaseSettings");
         services.AddDbContext<ProductsDataContext>(options => {
-            options.EnableSensitiveDataLogging()
-                .UseNpgsql(dbSettings.GetValue<string>("ConnectionString")
-                );
+            options.UseNpgsql(dbSettings.GetValue<string>("ConnectionString"));
         }, ServiceLifetime.Singleton);
         services.AddSingleton<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<ProductsDataContext>());
         services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));
@@ -28,6 +26,13 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
         services.AddHostedService<ProductMessageRelayWorker>();
+    })
+    .ConfigureLogging((context, logging) => {
+        var env = context.HostingEnvironment;
+        var config = context.Configuration.GetSection("Logging");
+        logging.AddConfiguration(config);
+        logging.AddConsole();
+        logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
     })
     .Build();
 

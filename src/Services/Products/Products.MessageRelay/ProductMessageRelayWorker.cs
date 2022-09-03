@@ -13,17 +13,17 @@ public class ProductMessageRelayWorker : BackgroundService
 {
     private readonly ILogger<ProductMessageRelayWorker> _logger;
     private readonly IRepository<OutboxItem> _repository;
-    private readonly MessageBrokerSettings _messageBrokerSettings;
+    private readonly MessageBrokerSettings _messageBroker;
     private IConnection _connection;
     private IModel _channel;
     private List<OutboxItem> _changeList = new();
-    private string _exchangeName;
+    private readonly string _exchangeName;
 
     public ProductMessageRelayWorker(ILogger<ProductMessageRelayWorker> logger, IOptions<MessageBrokerSettings> messageBrokerOptions, IRepository<OutboxItem> repository)
     {
         _logger = logger;
         _repository = repository;
-        _messageBrokerSettings = messageBrokerOptions.Value;
+        _messageBroker = messageBrokerOptions.Value;
         _exchangeName = "ProductEvents";
         InitRabbitMQ();
         
@@ -32,11 +32,7 @@ public class ProductMessageRelayWorker : BackgroundService
     private void InitRabbitMQ()
     {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.UserName = _messageBrokerSettings.Username;
-        factory.Password = _messageBrokerSettings.Password;
-        factory.VirtualHost = _messageBrokerSettings.VirtualHost;
-        factory.HostName = _messageBrokerSettings.HostName;
-
+        factory.Uri = new Uri(_messageBroker.Uri);
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
         _channel.ExchangeDeclare(_exchangeName, ExchangeType.Direct);
@@ -51,17 +47,6 @@ public class ProductMessageRelayWorker : BackgroundService
         {
             _logger.LogInformation("{0} - Checking Outbox", DateTime.Now);
             List<OutboxItem> unsentOutboxList = await _repository.Find(p => p.State == 0).ToListAsync();
-
-            //await _repository.Find(p => p.State == 0).ForEachAsync(item =>
-            //{
-            //    var body = Encoding.UTF8.GetBytes(item.Data);
-            //    _channel.BasicPublish(exchange: _exchangeName,
-            //                         routingKey: item.Type,
-            //                         basicProperties: messageProperties,
-            //                         body: body);
-            //    item.Send();
-            //    _repository.UpdateAsync(item);
-            //});
             unsentOutboxList.ForEach(outboxItem =>
             {
                 var body = Encoding.UTF8.GetBytes(outboxItem.Data);
@@ -76,7 +61,7 @@ public class ProductMessageRelayWorker : BackgroundService
 
 
 
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(5000, stoppingToken);
             await _repository.UpdateRangeAsync(_changeList);
             _changeList.Clear();
         }

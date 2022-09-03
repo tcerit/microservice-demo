@@ -30,7 +30,7 @@ namespace Orders.Application.Commands
 
             await _repository.AddAsync(order);
 
-            return buyer.Id;
+            return order.Id;
         }
     }
 

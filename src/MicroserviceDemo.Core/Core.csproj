@@ -15,6 +15,8 @@
 		      <PrivateAssets>all</PrivateAssets>
 		      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	      </PackageReference>
+	      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+	      <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="Events\" />
@@ -24,6 +26,9 @@
       <None Remove="Data\Services\" />
       <None Remove="Data\Outbox\" />
       <None Remove="Settings\" />
+      <None Remove="MediatR.Extensions.Microsoft.DependencyInjection" />
+      <None Remove="Configuration\" />
+      <None Remove="RabbitMQ.Client" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Events\" />
@@ -32,5 +37,6 @@
       <Folder Include="Data\Services\" />
       <Folder Include="Data\Outbox\" />
       <Folder Include="Settings\" />
+      <Folder Include="Configuration\" />
     </ItemGroup>
 </Project>

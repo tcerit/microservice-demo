@@ -1,4 +1,6 @@
 using System.Reflection;
+using Core;
+using Core.Configuration;
 using Core.Data;
 using Core.Events;
 using Customers.Application.Commands;
@@ -24,16 +26,9 @@ public class Program
                 .UseNpgsql(dbSettings.GetValue<string>("ConnectionString")
             );
         });
-
-
-
         builder.Services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<CustomersDataContext>());
-        builder.Services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
-
-        builder.Services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
-        builder.Services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
-        builder.Services.AddAutoMapper(typeof(CustomersMapper));
-        builder.Services.AddMediatR(typeof(RegisterCustomerCommand).Assembly);
+        builder.Services.AddCoreServices();
+        builder.Services.AddCustomerServices();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

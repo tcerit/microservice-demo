@@ -8,15 +8,14 @@
 
   <ItemGroup>
     <None Remove="Commands\" />
-    <None Remove="Repositories\" />
     <None Remove="AutoMapper" />
     <None Remove="Queries\" />
     <None Remove="Services\" />
     <None Remove="Models\" />
+    <None Remove="AutoMapper.Extensions.Microsoft.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Repositories\" />
     <Folder Include="Queries\" />
     <Folder Include="Services\" />
     <Folder Include="Models\" />
@@ -27,5 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
   </ItemGroup>
 </Project>

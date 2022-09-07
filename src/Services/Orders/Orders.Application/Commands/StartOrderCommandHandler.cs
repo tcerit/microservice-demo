@@ -5,7 +5,7 @@ using Orders.Domain;
 using MediatR;
 using Core.Data;
 using Ardalis.GuardClauses;
-using Orders.Application.Repositories;
+using Orders.Application.Services;
 
 namespace Orders.Application.Commands
 {

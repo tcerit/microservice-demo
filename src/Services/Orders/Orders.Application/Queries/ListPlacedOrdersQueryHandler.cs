@@ -3,7 +3,7 @@ using AutoMapper;
 using Core.Data;
 using MediatR;
 using Orders.Application.Models;
-using Orders.Application.Repositories;
+using Orders.Application.Services;
 using Orders.Domain;
 
 namespace Orders.Application.Queries

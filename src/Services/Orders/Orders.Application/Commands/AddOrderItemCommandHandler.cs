@@ -2,7 +2,7 @@
 using Ardalis.GuardClauses;
 using Core.Data;
 using MediatR;
-using Orders.Application.Repositories;
+using Orders.Application.Services;
 using Orders.Domain;
 
 namespace Orders.Application.Commands

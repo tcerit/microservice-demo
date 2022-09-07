@@ -3,7 +3,7 @@ using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Orders.Domain;
 
-namespace Orders.Application.Repositories
+namespace Orders.Application.Services
 {
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {

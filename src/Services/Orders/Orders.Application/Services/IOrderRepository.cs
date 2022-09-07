@@ -2,7 +2,7 @@
 using Core.Data;
 using Orders.Domain;
 
-namespace Orders.Application.Repositories
+namespace Orders.Application.Services
 {
 	public interface IOrderRepository : IRepository<Order>
 	{

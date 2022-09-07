@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
+using Core;
+using Core.Configuration;
 using Core.Data;
 using Core.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Orders.Application;
-using Orders.Application.Repositories;
 using Orders.Application.Services;
 using Orders.Data;
 
@@ -23,14 +24,9 @@ builder.Services.AddDbContext<OrdersDataContext>(options => {
 });
 
 builder.Services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<OrdersDataContext>());
-builder.Services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
-builder.Services.AddTransient(typeof(IOrderRepository), typeof(OrderRepository));
-builder.Services.AddAutoMapper(typeof(OrdersMapper));
-builder.Services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
-builder.Services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-Assembly[] y = AppDomain.CurrentDomain.GetAssemblies();
-builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddCoreServices();
+builder.Services.AddOrdersServices();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

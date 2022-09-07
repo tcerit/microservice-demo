@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
+using Core;
 using Core.Data;
 using Core.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Products.Application.Commands;
+using Products.Application.Services;
 using Products.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,12 +22,9 @@ builder.Services.AddDbContext<ProductsDataContext>(options => {
 });
 
 builder.Services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<ProductsDataContext>());
-builder.Services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
-
-builder.Services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
-builder.Services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
-
-builder.Services.AddMediatR(typeof(CreateProductCommand).Assembly);
+builder.Services.AddCoreServices();
+builder.Services.AddProductServices();
+//builder.Services.AddMediatR(typeof(CreateProductCommand).Assembly);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

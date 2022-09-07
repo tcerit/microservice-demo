@@ -1,6 +1,8 @@
 ﻿using Products.Application.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Products.Application.Models;
+using Products.Application.Queries;
 
 namespace Products.API.Controllers;
 
@@ -18,6 +20,33 @@ public class ProductsController : ControllerBase
         _mediator = mediator;
     }
 
+
+    [HttpGet]
+    public async Task<ActionResult<List<ProductDto>>> Get()
+    {
+        try
+        {
+            return Ok(await _mediator.Send(new ListProductsQuery()));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProductDto>> Get(Guid id)
+    {
+        try
+        {
+            return Ok(await _mediator.Send(new GetProductQuery(id)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpPost]
     public async Task<ActionResult<Guid>> Create(CreateProductRequest request)
     {
@@ -33,7 +62,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("{id}/list")]
-    public async Task<ActionResult<Guid>> List(Guid id)
+    public async Task<ActionResult> List(Guid id)
     {
         try
         {
@@ -47,7 +76,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("{id}/delist")]
-    public async Task<ActionResult<Guid>> Delist(Guid id)
+    public async Task<ActionResult> Delist(Guid id)
     {
         try
         {

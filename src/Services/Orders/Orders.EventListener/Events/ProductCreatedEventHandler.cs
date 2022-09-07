@@ -1,27 +1,44 @@
 ﻿using System;
+using Core.Configuration;
 using Core.Data;
 using Core.Events;
 using MediatR;
+using Orders.Data;
 using Orders.Domain;
 
 namespace Orders.EventListener.Events
 {
 	public class ProductCreatedEventHandler : INotificationHandler<DomainEventNotification<ProductCreatedEvent>>
     {
-        private readonly IRepository<OrderProduct> _repository;
 
-        public ProductCreatedEventHandler(IRepository<OrderProduct> repository)
+        private readonly ILogger<ProductCreatedEventHandler> _logger;
+        private readonly IRepositoryScopeFactory<OrdersDataContext> _serviceScopeFactory;
+
+        public ProductCreatedEventHandler(IRepositoryScopeFactory<OrdersDataContext> serviceScopeFactory, ILogger<ProductCreatedEventHandler> logger)
         {
-            _repository = repository;
+            _serviceScopeFactory = serviceScopeFactory;
+            _logger = logger;
         }
 
         public async Task Handle(DomainEventNotification<ProductCreatedEvent> notification, CancellationToken cancellationToken)
         {
-            ProductCreatedEvent eventData = notification.DomainEvent;
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var _repository = scope.GetRepository<OrderProduct>();
 
-            OrderProduct product = OrderProduct.FromProduct(eventData.ProductId, eventData.Name, eventData.Price);
+                try
+                {
+                    ProductCreatedEvent eventData = notification.DomainEvent;
 
-            await _repository.AddAsync(product);
+                    OrderProduct product = OrderProduct.FromProduct(eventData.ProductId, eventData.Name, eventData.Price);
+
+                    await _repository.AddAsync(product);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+            }
         }
     }
 }

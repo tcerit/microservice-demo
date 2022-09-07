@@ -22,9 +22,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MicroserviceDemo.Core\Core.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\Orders.Data\Orders.Data.csproj" />
+    <ProjectReference Include="..\..\..\CoreConfigurator\CoreConfigurator.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="MediatR" />

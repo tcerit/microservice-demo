@@ -44,6 +44,11 @@ public class Product : Entity
         Picture = new Picture(url);
     }
 
+    public void UdpatePrice(decimal newPrice)
+    {
+        Price = newPrice;
+    }
+
     public void List()
     {
         IsListed = true;

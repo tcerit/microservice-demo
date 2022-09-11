@@ -20,19 +20,19 @@ IHost host = Host.CreateDefaultBuilder(args)
         var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables();
         var configuration = builder.Build();
 
-        var dbSettings = configuration.GetSection("DatabaseSettings");
+        services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));
+
         services.AddDbContext<OrdersDataContext>(options =>
         {
             options.EnableSensitiveDataLogging()
-                .UseNpgsql(dbSettings.GetValue<string>("ConnectionString"));
+                .UseNpgsql(configuration.GetSection("DatabaseSettings").GetValue<string>("ConnectionString"));
         });
         services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<OrdersDataContext>());
         services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
         services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies(), c => c.AsSingleton());
         services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton(typeof(IRepositoryScopeFactory<>), typeof(RepositoryScopeFactory<>));
-
-        services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));
 
         services.AddHostedService<OrdersEventListenerWorker>();
     })

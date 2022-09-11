@@ -118,6 +118,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - "DatabaseSettings:ConnectionString=Server=customersdb;Port=5432;Database=MSDCustomersDB;User Id=postgres;Password=123"
         - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+        - "MessageBroker:ExchangeName=CustomerEvents"
       command: ["./wait-for-it.sh", "customersdb:5432 rabbitmq:5672", "--", "dotnet", "Customers.MessageRelay.dll"]
       depends_on:
         - customersdb
@@ -171,6 +172,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - "DatabaseSettings:ConnectionString=Server=ordersdb;Port=5432;Database=MSDOrdersDB;User Id=postgres;Password=123"
         - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+        - "MessageBroker:ExchangeName=OrderEvents"
       command: ["./wait-for-it.sh", "ordersdb:5432 rabbitmq:5672", "--", "dotnet", "Orders.MessageRelay.dll"]
       restart: always
       depends_on:
@@ -230,6 +232,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - "DatabaseSettings:ConnectionString=Server=productsdb;Port=5432;Database=MSDProductsDB;User Id=postgres;Password=123"
         - "MessageBroker:Uri=amqp://guest:guest@rabbitmq:5672/"
+        - "MessageBroker:ExchangeName=ProductEvents"
       depends_on:
         - productsdb
         - rabbitmq

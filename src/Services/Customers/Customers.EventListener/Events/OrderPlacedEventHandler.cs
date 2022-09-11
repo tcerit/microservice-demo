@@ -1,7 +1,9 @@
 ﻿using System;
 using Ardalis.GuardClauses;
+using Core.Configuration;
 using Core.Data;
 using Core.Events;
+using Customers.Data;
 using Customers.Domain;
 using MediatR;
 
@@ -9,21 +11,42 @@ namespace Customers.EventListener.Events
 {
 	public class OrderPlacedEventHandler : INotificationHandler<DomainEventNotification<OrderPlacedEvent>>
 	{
-        private readonly IRepository<Customer> _repository;
-        public OrderPlacedEventHandler(IRepository<Customer> repository)
+        private readonly ILogger<OrderPlacedEventHandler> _logger;
+        private readonly IRepositoryScopeFactory<CustomersDataContext> _serviceScopeFactory;
+
+        public OrderPlacedEventHandler(
+            ILogger<OrderPlacedEventHandler> logger,
+            IRepositoryScopeFactory<CustomersDataContext> serviceScopeFactory)
         {
-            _repository = repository;
+            _logger = logger;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task Handle(DomainEventNotification<OrderPlacedEvent> notification, CancellationToken cancellationToken)
         {
-            OrderPlacedEvent eventData = notification.DomainEvent;
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                try
+                {
+                    var repository = scope.GetRepository<Customer>();
 
-            Customer customer = await _repository.GetByIdAsync(eventData.BuyerId);
+                    OrderPlacedEvent eventData = notification.DomainEvent;
+                    Customer? customer = await repository.GetByIdAsync(eventData.BuyerId);
+                    Guard.Against.Null(customer);
+                    customer.EarnPointsFromOrder(eventData.OrderTotal);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+            }
+            
 
-            Guard.Against.Null(customer);
+            
 
-            customer.EarnPointsFromOrder(eventData.OrderTotal);
+            
+
+            
             
         }
     }

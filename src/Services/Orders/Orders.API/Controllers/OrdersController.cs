@@ -37,7 +37,7 @@ public class OrdersController : ControllerBase
         
     }
 
-    [HttpPost("{id}/Items")]
+    [HttpPost("{id}/AddItem")]
     public async Task<ActionResult> Add([FromRoute] Guid id, [FromBody] AddOrderItemRequest request)
     {
         try
@@ -54,12 +54,12 @@ public class OrdersController : ControllerBase
 
     }
 
-    [HttpPost("{id}/Items/{productId}")]
-    public async Task<ActionResult> Remove([FromRoute] Guid id, [FromRoute] Guid productId)
+    [HttpPost("{id}/RemoveItem")]
+    public async Task<ActionResult> Remove([FromRoute] Guid id, [FromBody] RemoveItemRequest request)
     {
         try
         {
-            await _mediator.Send(new RemoveOrderItemCommand(id, productId));
+            await _mediator.Send(new RemoveOrderItemCommand(id, request.ProductId));
 
             return Ok();
 
@@ -72,11 +72,11 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id}/Items/{productId}/SetQuantity")]
-    public async Task<ActionResult> SetQuantity([FromRoute] Guid id, [FromRoute] Guid productId, [FromBody] int quantity)
+    public async Task<ActionResult> SetQuantity([FromRoute] Guid id, [FromRoute] Guid productId, [FromBody] SetQuantityRequest request)
     {
         try
         {
-            await _mediator.Send(new EditQuantityCommand(id, productId, quantity));
+            await _mediator.Send(new EditQuantityCommand(id, productId, request.Quantity));
 
             return Ok();
 

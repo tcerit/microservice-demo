@@ -1,6 +1,10 @@
 using System.Reflection;
+using Core;
+using Core.Configuration;
 using Core.Data;
+using Core.Data.Outbox;
 using Core.Events;
+using Core.Messaging;
 using Core.Settings;
 using Customers.Data;
 using Customers.MessageRelay;
@@ -17,15 +21,21 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables();
         var configuration = builder.Build();
-        var dbSettings = configuration.GetSection("DatabaseSettings");
-        services.AddDbContext<CustomersDataContext>(options => {
-            options.UseNpgsql(dbSettings.GetValue<string>("ConnectionString"));
-        }, ServiceLifetime.Singleton);
-        services.AddSingleton<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<CustomersDataContext>());
+
         services.Configure<MessageBrokerSettings>(configuration.GetSection("MessageBroker"));
-        services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
-        services.AddTransient<IDomainEventDispatcher, DomainEventDispatcher>();
-        services.AddMediatR(typeof(DomainEventDispatcher).GetTypeInfo().Assembly);
+
+        services.AddDbContext<CustomersDataContext>(options => {
+            options.UseNpgsql(configuration.GetSection("DatabaseSettings").GetValue<string>("ConnectionString"));
+        });
+
+        services.AddScoped<DataContext>((serviceProvider) => serviceProvider.GetRequiredService<CustomersDataContext>());
+        services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
+        services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies(), c => c.AsSingleton());
+        services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddSingleton(typeof(IRepositoryScopeFactory<>), typeof(RepositoryScopeFactory<>));
+        services.AddSingleton<IMessageBroker, MessageBroker>();
+        services.AddSingleton<IOutboxManager, OutboxManager<CustomersDataContext>>();
 
         services.AddHostedService<CustomersMessageRelayWorker>();
     })

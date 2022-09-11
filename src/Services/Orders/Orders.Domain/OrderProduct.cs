@@ -36,6 +36,11 @@ namespace Orders.Domain
         {
             IsAvailable = false;
         }
+
+        public void UpdatePrice(decimal newPrice)
+        {
+            Price = newPrice;
+        }
     }
 }
 

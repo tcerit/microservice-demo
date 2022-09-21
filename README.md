@@ -35,7 +35,7 @@ docker compose -f docker-compose.yml up -d
 
 * Remove `-d` option to see the console output for the containers
 
-* Check [Compose V2](https://www.docker.com/blog/announcing-compose-v2-general-availability/) just in case you're still using `docker-compose` command.
+* Check [Compose V2 availability](https://www.docker.com/blog/announcing-compose-v2-general-availability/) just in case you're still using `docker-compose` command.
 
 <img width="961" alt="image" src="https://user-images.githubusercontent.com/22146984/191617512-42ee1967-dd26-4f2b-8a77-e2b774a55a29.png">
 

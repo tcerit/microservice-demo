@@ -2,7 +2,7 @@
 A microservice architecture sample adopting DDD(Domain Driven Design) approach with .NET 6.0.
 There are three microservices Orders, Customers and Products using PostgreSQL as RDMS, RabbitMQ as MessageBroker, transactional outbox pattern for reliable messaging and docker for containerization.
 
-## What Can You Find in This Sample
+## What Can You Find
 * .Net Web API application with REST API principles
 * Entity Framework Core 6.0 and Repository Pattern Implementation
 * MediatR for Events and CQRS

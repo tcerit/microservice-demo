@@ -12,6 +12,7 @@ There are three microservices Orders, Customers and Products using PostgreSQL as
 * RabbitMQ implementation for broadcasting to multiple clients and listening from multiple exchanges
 * Transactional Outbox Pattern
 * Docker Containers for microservices and infrastructures, docker compose for setting up and deploying all containers.
+* xUnit for unit tests
 
 ## Microservice Architecture 
 

@@ -1,15 +1,8 @@
 using System.Text;
-using System.Text.Json;
-using System.Threading.Channels;
 using Ardalis.GuardClauses;
-using Core.Data;
 using Core.Events;
 using Core.Settings;
-using MediatR;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Orders.Data;
 using Orders.EventListener.Events;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

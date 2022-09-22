@@ -1,14 +1,8 @@
-using System.Reflection;
-using Core;
 using Core.Configuration;
 using Core.Data;
-using Core.Events;
-using Customers.Application.Commands;
 using Customers.Application.Services;
 using Customers.Data;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 public class Program
 {

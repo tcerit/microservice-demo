@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Core.Configuration;
+﻿using Core.Configuration;
 using Core.Data;
 using Core.Data.Outbox;
 using Core.Events;

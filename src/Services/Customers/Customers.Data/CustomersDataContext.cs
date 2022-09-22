@@ -1,5 +1,4 @@
 ﻿using Core.Data;
-using Core.Data.Outbox;
 using Core.Events;
 using Customers.Domain;
 using Microsoft.EntityFrameworkCore;

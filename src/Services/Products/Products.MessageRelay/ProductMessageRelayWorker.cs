@@ -1,13 +1,5 @@
-﻿using System.Text;
-using System.Threading.Channels;
-using Ardalis.GuardClauses;
-using Core.Data;
-using Core.Data.Outbox;
+﻿using Core.Data.Outbox;
 using Core.Messaging;
-using Core.Settings;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 
 namespace Products.MessageRelay;
 

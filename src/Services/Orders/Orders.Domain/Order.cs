@@ -1,8 +1,5 @@
-﻿
-using System;
-using Ardalis.GuardClauses;
+﻿using Ardalis.GuardClauses;
 using Core.Domain;
-using Core.Guards;
 using Orders.Domain.Events;
 
 namespace Orders.Domain;

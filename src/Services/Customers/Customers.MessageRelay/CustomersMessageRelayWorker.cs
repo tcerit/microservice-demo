@@ -1,11 +1,5 @@
-using System.Text;
-using System.Threading.Channels;
-using Core.Data;
 using Core.Data.Outbox;
 using Core.Messaging;
-using Core.Settings;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 
 namespace Customers.MessageRelay;
 

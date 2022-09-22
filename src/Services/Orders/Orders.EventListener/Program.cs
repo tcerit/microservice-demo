@@ -1,5 +1,3 @@
-using System.Reflection;
-using Core;
 using Core.Configuration;
 using Core.Data;
 using Core.Events;
@@ -8,7 +6,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Orders.Data;
 using Orders.EventListener;
-using Orders.EventListener.Events;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>

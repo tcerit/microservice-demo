@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Core.Events;
 using Core.Settings;
-using Customers.Domain.Events;
 using Customers.EventListener.Events;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;

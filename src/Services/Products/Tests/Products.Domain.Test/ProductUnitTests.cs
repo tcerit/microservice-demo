@@ -38,6 +38,39 @@ public class UnitTest1
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenPriceIsNegative()
+    {
+        Product product;
+
+        Action act = () => product = Product.Create("Product", -1m);
+
+        Assert.Throws<ArgumentException>(act);
+    }
+
+    [Fact]
+    public void Price_IsCorrect_WhenUpdatedPrice()
+    {
+        Product product = Product.Create("Product", 10m);
+        decimal newPrice = 20m;
+
+        product.UdpatePrice(newPrice);
+
+        Assert.Equal(newPrice, product.Price);
+    }
+
+
+    [Fact]
+    public void UpdatePrice_ShouldThrowException_WhenPriceIsNegative()
+    {
+        Product product = Product.Create("Product");
+        
+
+        Action act = () => product.UdpatePrice(-1m);
+
+        Assert.Throws<ArgumentException>(act);
+    }
+
+    [Fact]
     public void SetPicture_ShouldSet_ForUrlStrings()
     {
         Product product = Product.Create("Product");

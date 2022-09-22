@@ -27,6 +27,10 @@ There are three microservices Orders, Customers and Products using PostgreSQL as
 
 ### Installing
 
+1. Clone the repository
+2. Make sure Docker Desktop is running
+3. Run below command inside src folder where `docker-compose.yml` exists
+
 ```
 docker compose -f docker-compose.yml up -d
 ```

@@ -25,11 +25,11 @@ There are three microservices Orders, Customers and Products using PostgreSQL as
 * .Net Core 6 or later [Download](https://dotnet.microsoft.com/download/dotnet/6.0)
 * Docker Desktop [Download](https://www.docker.com/products/docker-desktop)
 
-### Installing
+### Install and Run
 
 1. Clone the repository
 2. Make sure Docker Desktop is running
-3. Run below command inside src folder where `docker-compose.yml` exists
+3. Run below command inside src folder where `docker-compose.yml` exists and wait for some time till all services are up and running.
 
 ```
 docker compose -f docker-compose.yml up -d
@@ -43,4 +43,12 @@ docker compose -f docker-compose.yml up -d
 
 <img width="961" alt="image" src="https://user-images.githubusercontent.com/22146984/191617512-42ee1967-dd26-4f2b-8a77-e2b774a55a29.png">
 
- 
+ ### API Docs
+
+* **Customers API :** http://host.docker.internal:8000/swagger/index.html
+* **Orders API :** http://host.docker.internal:8010/swagger/index.html
+* **Products API :** http://host.docker.internal:8020/swagger/index.html
+
+#### Note: 
+Your docker host `host.docker.internal` may be different according to your docker desktop version and operating system. \
+You can check this SO post: https://stackoverflow.com/a/43541681/1743222

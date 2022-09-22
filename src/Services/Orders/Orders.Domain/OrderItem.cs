@@ -27,16 +27,10 @@ namespace Orders.Domain
             Quantity += quantity;
         }
 
-        public void Remove(int quantity)
-        {
-            Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-            Quantity -= quantity;
-        }
-
         public void SetNewQuantity(int quantity)
         {
             Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-            Quantity -= quantity;
+            Quantity = quantity;
         }
         
     }

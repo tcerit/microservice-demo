@@ -21,7 +21,7 @@ namespace Orders.Domain.Test
             return _orderProduct;
         }
 
-        public OrderProduct BuildDiffierent()
+        public OrderProduct BuildDifferent()
         {
             _orderProduct = OrderProduct.FromProduct(Guid.NewGuid(), TestDiffirentProductName, TestDifferentProductUnitPrice);
             return _orderProduct;

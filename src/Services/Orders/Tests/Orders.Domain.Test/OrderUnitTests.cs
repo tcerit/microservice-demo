@@ -107,13 +107,13 @@ public class OrderUnitTests
         Order order = new OrderBuilder().BuildWithOrderStart();
         OrderProduct product = new OrderProductBuilder().BuildDefault();
         int quantity = 2;
-        OrderProduct product2 = new OrderProductBuilder().BuildDiffierent();
+        OrderProduct product2 = new OrderProductBuilder().BuildDifferent();
         int quantity2 = 5;
 
         order.AddItem(product, quantity);
-        order.AddItem(product2, quantity);
+        order.AddItem(product2, quantity2);
 
-        Assert.Equal(quantity * product.Price + quantity * product2.Price, order.OrderTotal);
+        Assert.Equal(quantity * product.Price + quantity2 * product2.Price, order.OrderTotal);
     }
 
     [Fact]
@@ -122,12 +122,11 @@ public class OrderUnitTests
         Order order = new OrderBuilder().BuildWithOrderStart();
         OrderProduct product = new OrderProductBuilder().BuildDefault();
         int quantity = 2;
-        OrderProduct product2 = new OrderProductBuilder().BuildDiffierent();
         int quantity2 = 5;
 
         order.AddItem(product, quantity);
-        order.AddItem(product2, quantity);
+        order.AddItem(product, quantity2);
 
-        Assert.Equal(quantity * product.Price + quantity * product2.Price, order.OrderTotal);
+        Assert.Equal(product.Price * (quantity + quantity2), order.OrderTotal);
     }
 }

@@ -46,6 +46,7 @@ public class Product : Entity
 
     public void UdpatePrice(decimal newPrice)
     {
+        Guard.Against.Negative(newPrice, nameof(newPrice));
         Price = newPrice;
     }
 

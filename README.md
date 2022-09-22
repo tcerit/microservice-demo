@@ -52,3 +52,11 @@ docker compose -f docker-compose.yml up -d
 #### Note: 
 Your docker host `host.docker.internal` may be different according to your docker desktop version and operating system. \
 You can check this SO post: https://stackoverflow.com/a/43541681/1743222
+
+
+ ### What's Next
+ This repository is a work in progress. I'll be refactoring the code and try to implement best practices, other than that:
+
+ 1. Logging
+ 2. Metrics
+ 3. gRPC

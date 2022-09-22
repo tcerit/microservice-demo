@@ -7,7 +7,6 @@ namespace Core.Configuration
 {
 	public class RepositoryServiceScope:IRepositortServiceScope
 	{
-
         private readonly IServiceScope _scope;
 
         public RepositoryServiceScope(IServiceScope scope) => _scope = scope;
@@ -15,28 +14,27 @@ namespace Core.Configuration
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : Entity => _scope.ServiceProvider.GetRequiredService<IRepository<TEntity>>();
 
+        private bool disposedValue;
 
-        private bool _disposed = false;
-
-        public void Dispose()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose(true);
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+
+
+                disposedValue = true;
+            }
+        }
+
+
+        void IDisposable.Dispose()
+        {
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        protected virtual void Dispose(bool calledFromCodeNotTheGarbageCollector)
-        {
-            if (_disposed)
-                return;
-            if (calledFromCodeNotTheGarbageCollector)
-            {
-                // dispose of manged resources in here
-                _scope?.Dispose();
-            }
-            _disposed = true;
-        }
-
-        ~RepositoryServiceScope() { Dispose(false); }
     }
 
         

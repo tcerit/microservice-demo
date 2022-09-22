@@ -1,11 +1,6 @@
-﻿using System.Reflection;
-using Core;
+﻿using Core.Configuration;
 using Core.Data;
-using Core.Events;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Products.Application.Commands;
 using Products.Application.Services;
 using Products.Data;
 

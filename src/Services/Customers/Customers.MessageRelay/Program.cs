@@ -1,5 +1,3 @@
-using System.Reflection;
-using Core;
 using Core.Configuration;
 using Core.Data;
 using Core.Data.Outbox;
@@ -10,7 +8,6 @@ using Customers.Data;
 using Customers.MessageRelay;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
